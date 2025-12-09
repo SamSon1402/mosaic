@@ -1,0 +1,1664 @@
+import React, { useState, useEffect } from 'react';
+
+// Mosaic Strategic Projects Demo Prototype v2
+// Enhanced with project context, problem statements, and business value
+
+const MosaicPrototype = () => {
+  const [activeProject, setActiveProject] = useState(null);
+  const [isLoaded, setIsLoaded] = useState(false);
+  const [styleProgress, setStyleProgress] = useState(0);
+  const [selectedAgent, setSelectedAgent] = useState(null);
+  const [activeCampaign, setActiveCampaign] = useState(null);
+  const [showDetails, setShowDetails] = useState(false);
+
+  useEffect(() => {
+    setIsLoaded(true);
+  }, []);
+
+  // Project Overview Data
+  const projectOverviews = {
+    'style-clone': {
+      number: '01',
+      title: 'Style Clone',
+      tagline: 'The AI that edits like you',
+      problem: 'AI video tools produce generic outputs that don\'t match creator styles. Creators spend hours making AI content "feel like them" — adding signature transitions, color grades, and pacing.',
+      solution: 'Learn a creator\'s unique editing fingerprint from 3-5 example videos, then automatically apply that learned style to all future content.',
+      marketSize: '$1.3T',
+      marketLabel: 'Creator Economy by 2033',
+      impact: [
+        { metric: '91%', label: 'of creators use AI tools but struggle with authenticity' },
+        { metric: '3x', label: 'higher retention when content feels "on-brand"' },
+        { metric: '$25-100', label: '/month premium tier conversion trigger' },
+      ],
+      moat: 'Every style vector = proprietary training data. Over time, Mosaic accumulates the largest dataset of "what good editing looks like" — a compounding advantage competitors cannot replicate.',
+      timeline: 'Q1 2026',
+    },
+    'enterprise': {
+      number: '02',
+      title: 'Mosaic for Teams',
+      tagline: 'Enterprise content factory',
+      problem: 'Marketing teams produce 100s of video assets monthly across platforms, languages, and formats. Current workflow: Premiere → After Effects → AI tools → manual QA. Fragmented, slow, inconsistent.',
+      solution: 'One campaign brief triggers parallel agents generating all variants (lengths, ratios, languages, A/B tests) while maintaining brand consistency automatically.',
+      marketSize: '$21B',
+      marketLabel: 'Enterprise Video Market',
+      impact: [
+        { metric: '24x', label: 'variants from single source video' },
+        { metric: '70%+', label: 'gross margins on enterprise deals' },
+        { metric: '$50-500K', label: 'annual contract value potential' },
+      ],
+      moat: 'Competitors need 12-18 months to build comparable agentic infrastructure. Runway = generation, not workflow. Adobe = feature-level, not pipeline-level. Mosaic owns "video operations".',
+      timeline: 'Q2-Q4 2026',
+    },
+    'marketplace': {
+      number: '03',
+      title: 'Agent Marketplace',
+      tagline: 'Platform economics at scale',
+      problem: 'Tool businesses have linear growth. Every new customer requires proportional support. No network effects. Competitors can always build similar features.',
+      solution: 'Enable third-party creators to build, share, and monetize AI video agents. A real estate agent built once serves thousands of realtors. Platform value compounds.',
+      marketSize: '25x',
+      marketLabel: 'Revenue multiple (platform vs tool)',
+      impact: [
+        { metric: '20-30%', label: 'commission on all marketplace transactions' },
+        { metric: '100%', label: 'gross margin on platform revenue' },
+        { metric: '∞', label: 'network effects — each agent increases platform value' },
+      ],
+      moat: 'No AI video editor has a meaningful agent marketplace. Adobe\'s ecosystem is fragmented. Runway has no UGC layer. First-mover advantage in a winner-take-most market.',
+      timeline: 'Q3 2026',
+    },
+  };
+
+  // Style Clone Demo Data
+  const styleMetrics = [
+    { label: 'Cut Rhythm', value: '2.3s avg', confidence: 94 },
+    { label: 'Color Temp', value: 'Warm +15', confidence: 89 },
+    { label: 'Transitions', value: 'Cross-fade', confidence: 97 },
+    { label: 'Pacing', value: 'Dynamic', confidence: 91 },
+    { label: 'Text Style', value: 'Minimal Sans', confidence: 88 },
+    { label: 'Audio Duck', value: '-6dB', confidence: 95 },
+  ];
+
+  const creatorVideos = [
+    { id: 1, title: 'Day in Tokyo', views: '2.4M', style: 'Cinematic' },
+    { id: 2, title: 'Street Food Guide', views: '1.8M', style: 'Documentary' },
+    { id: 3, title: 'Morning Routine', views: '3.1M', style: 'Lifestyle' },
+    { id: 4, title: 'Travel Essentials', views: '890K', style: 'Product' },
+  ];
+
+  // Enterprise Demo Data
+  const campaigns = [
+    { 
+      id: 1, 
+      name: 'Q1 Product Launch', 
+      variants: 24, 
+      status: 'In Progress',
+      outputs: ['16:9', '9:16', '1:1'],
+      languages: ['EN', 'ES', 'FR', 'DE', 'JP'],
+      progress: 67
+    },
+    { 
+      id: 2, 
+      name: 'Brand Refresh Campaign', 
+      variants: 18, 
+      status: 'Complete',
+      outputs: ['16:9', '9:16'],
+      languages: ['EN', 'ES', 'PT'],
+      progress: 100
+    },
+    { 
+      id: 3, 
+      name: 'Holiday Social Push', 
+      variants: 32, 
+      status: 'Queued',
+      outputs: ['9:16', '1:1'],
+      languages: ['EN', 'FR', 'DE', 'IT', 'NL'],
+      progress: 0
+    },
+  ];
+
+  const brandAssets = {
+    colors: ['#0A0A0A', '#F5F5F0', '#E94560', '#4ECDC4'],
+    fonts: ['GT Walsheim Pro', 'Editorial New'],
+    transitions: ['Cross Dissolve', 'Smooth Pan'],
+  };
+
+  // Marketplace Demo Data
+  const agents = [
+    { 
+      id: 1, 
+      name: 'Viral Hook Generator', 
+      creator: 'EditLabs',
+      rating: 4.9,
+      users: '12.4K',
+      price: '$29/mo',
+      category: 'TikTok',
+      description: 'Analyzes top-performing hooks and generates scroll-stopping intros'
+    },
+    { 
+      id: 2, 
+      name: 'Podcast Clip Master', 
+      creator: 'AudioFlow',
+      rating: 4.8,
+      users: '8.7K',
+      price: '$19/mo',
+      category: 'Podcast',
+      description: 'Auto-identifies viral moments and creates shareable clips'
+    },
+    { 
+      id: 3, 
+      name: 'E-Commerce Demo Pro', 
+      creator: 'ShopStudio',
+      rating: 4.7,
+      users: '5.2K',
+      price: '$49/mo',
+      category: 'Product',
+      description: 'Transforms product photos into dynamic video showcases'
+    },
+    { 
+      id: 4, 
+      name: 'Cinematic Color AI', 
+      creator: 'FilmGrade',
+      rating: 4.9,
+      users: '15.1K',
+      price: 'Free',
+      category: 'Style',
+      description: 'Hollywood-grade color grading with one-click presets'
+    },
+    { 
+      id: 5, 
+      name: 'Real Estate Tour', 
+      creator: 'PropertyViz',
+      rating: 4.6,
+      users: '3.8K',
+      price: '$39/mo',
+      category: 'Real Estate',
+      description: 'Virtual tour videos from photos with AI narration'
+    },
+    { 
+      id: 6, 
+      name: 'YouTube Retention Boost', 
+      creator: 'GrowthAI',
+      rating: 4.8,
+      users: '9.3K',
+      price: '$24/mo',
+      category: 'YouTube',
+      description: 'Adds pattern interrupts and retention hooks automatically'
+    },
+  ];
+
+  const categories = ['All', 'TikTok', 'YouTube', 'Podcast', 'Product', 'Real Estate', 'Style'];
+  const [activeCategory, setActiveCategory] = useState('All');
+
+  // Simulate style learning progress
+  useEffect(() => {
+    if (activeProject === 'style-clone' && styleProgress < 100) {
+      const timer = setInterval(() => {
+        setStyleProgress(prev => Math.min(prev + 2, 100));
+      }, 100);
+      return () => clearInterval(timer);
+    }
+  }, [activeProject, styleProgress]);
+
+  // Project Overview Card Component
+  const ProjectOverviewCard = ({ projectKey }) => {
+    const project = projectOverviews[projectKey];
+    return (
+      <div style={{
+        backgroundColor: '#FFFFFF',
+        borderRadius: '32px',
+        padding: '48px',
+        border: '1px solid rgba(0,0,0,0.06)',
+        marginBottom: '40px',
+      }}>
+        {/* Problem & Solution */}
+        <div style={{ 
+          display: 'grid', 
+          gridTemplateColumns: '1fr 1fr',
+          gap: '48px',
+          marginBottom: '40px',
+        }}>
+          <div>
+            <div style={{
+              display: 'inline-flex',
+              alignItems: 'center',
+              gap: '8px',
+              padding: '8px 16px',
+              backgroundColor: '#FEE2E2',
+              borderRadius: '100px',
+              marginBottom: '16px',
+            }}>
+              <span style={{ fontSize: '16px' }}>⚠️</span>
+              <span style={{ fontSize: '13px', fontWeight: '600', color: '#991B1B' }}>THE PROBLEM</span>
+            </div>
+            <p style={{ 
+              fontSize: '17px', 
+              lineHeight: 1.7,
+              color: '#333',
+            }}>
+              {project.problem}
+            </p>
+          </div>
+          <div>
+            <div style={{
+              display: 'inline-flex',
+              alignItems: 'center',
+              gap: '8px',
+              padding: '8px 16px',
+              backgroundColor: '#DCFCE7',
+              borderRadius: '100px',
+              marginBottom: '16px',
+            }}>
+              <span style={{ fontSize: '16px' }}>✓</span>
+              <span style={{ fontSize: '13px', fontWeight: '600', color: '#166534' }}>OUR SOLUTION</span>
+            </div>
+            <p style={{ 
+              fontSize: '17px', 
+              lineHeight: 1.7,
+              color: '#333',
+            }}>
+              {project.solution}
+            </p>
+          </div>
+        </div>
+
+        {/* Market & Impact Metrics */}
+        <div style={{
+          display: 'grid',
+          gridTemplateColumns: '200px 1fr',
+          gap: '32px',
+          padding: '32px',
+          backgroundColor: '#F7F6F3',
+          borderRadius: '24px',
+          marginBottom: '32px',
+        }}>
+          <div style={{ 
+            borderRight: '1px solid #E5E4E1',
+            paddingRight: '32px',
+          }}>
+            <p style={{ 
+              fontSize: '13px', 
+              color: '#666',
+              textTransform: 'uppercase',
+              letterSpacing: '0.1em',
+              marginBottom: '8px',
+            }}>Market Opportunity</p>
+            <p style={{ 
+              fontSize: '48px', 
+              fontWeight: '600',
+              letterSpacing: '-0.02em',
+              lineHeight: 1,
+              marginBottom: '4px',
+            }}>{project.marketSize}</p>
+            <p style={{ fontSize: '14px', color: '#666' }}>{project.marketLabel}</p>
+          </div>
+          <div>
+            <p style={{ 
+              fontSize: '13px', 
+              color: '#666',
+              textTransform: 'uppercase',
+              letterSpacing: '0.1em',
+              marginBottom: '16px',
+            }}>Business Impact</p>
+            <div style={{ display: 'flex', gap: '24px' }}>
+              {project.impact.map((item, i) => (
+                <div key={i} style={{ flex: 1 }}>
+                  <p style={{ 
+                    fontSize: '28px', 
+                    fontWeight: '600',
+                    color: '#0A0A0A',
+                    marginBottom: '4px',
+                  }}>{item.metric}</p>
+                  <p style={{ fontSize: '13px', color: '#666', lineHeight: 1.4 }}>{item.label}</p>
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
+
+        {/* Competitive Moat */}
+        <div style={{
+          padding: '24px 32px',
+          backgroundColor: '#0A0A0A',
+          borderRadius: '16px',
+          display: 'flex',
+          alignItems: 'flex-start',
+          gap: '16px',
+        }}>
+          <div style={{
+            width: '40px',
+            height: '40px',
+            borderRadius: '50%',
+            backgroundColor: 'rgba(78, 205, 196, 0.2)',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            flexShrink: 0,
+          }}>
+            <span style={{ fontSize: '18px' }}>🏰</span>
+          </div>
+          <div>
+            <p style={{ 
+              fontSize: '13px', 
+              color: '#4ECDC4',
+              textTransform: 'uppercase',
+              letterSpacing: '0.1em',
+              marginBottom: '8px',
+              fontWeight: '600',
+            }}>Competitive Moat</p>
+            <p style={{ 
+              fontSize: '15px', 
+              color: 'rgba(255,255,255,0.85)',
+              lineHeight: 1.6,
+            }}>
+              {project.moat}
+            </p>
+          </div>
+        </div>
+      </div>
+    );
+  };
+
+  return (
+    <div style={{
+      minHeight: '100vh',
+      backgroundColor: '#F7F6F3',
+      fontFamily: '"DM Sans", -apple-system, BlinkMacSystemFont, sans-serif',
+      color: '#0A0A0A',
+      overflow: 'hidden',
+    }}>
+      
+      {/* Header */}
+      <header style={{
+        padding: '24px 48px',
+        display: 'flex',
+        justifyContent: 'space-between',
+        alignItems: 'center',
+        borderBottom: '1px solid rgba(0,0,0,0.06)',
+        backgroundColor: 'rgba(247, 246, 243, 0.95)',
+        backdropFilter: 'blur(20px)',
+        position: 'sticky',
+        top: 0,
+        zIndex: 100,
+      }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+          <div style={{
+            width: '40px',
+            height: '40px',
+            background: 'linear-gradient(135deg, #0A0A0A 0%, #333 100%)',
+            borderRadius: '10px',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+          }}>
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
+              <path d="M12 2L2 7L12 12L22 7L12 2Z" stroke="#F7F6F3" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+              <path d="M2 17L12 22L22 17" stroke="#F7F6F3" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+              <path d="M2 12L12 17L22 12" stroke="#F7F6F3" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+            </svg>
+          </div>
+          <span style={{ 
+            fontSize: '20px', 
+            fontWeight: '600',
+            letterSpacing: '-0.02em'
+          }}>mosaic</span>
+          <span style={{
+            padding: '4px 10px',
+            backgroundColor: '#FEF3C7',
+            borderRadius: '100px',
+            fontSize: '11px',
+            fontWeight: '600',
+            color: '#92400E',
+            marginLeft: '8px',
+          }}>STRATEGIC DEMO</span>
+        </div>
+        
+        {activeProject && (
+          <nav style={{ display: 'flex', gap: '8px' }}>
+            {[
+              { id: 'style-clone', label: 'Style Clone' },
+              { id: 'enterprise', label: 'For Teams' },
+              { id: 'marketplace', label: 'Marketplace' },
+            ].map(item => (
+              <button
+                key={item.id}
+                onClick={() => {
+                  setActiveProject(item.id);
+                  if (item.id === 'style-clone') setStyleProgress(0);
+                }}
+                style={{
+                  padding: '10px 20px',
+                  borderRadius: '100px',
+                  border: activeProject === item.id ? '1.5px solid #0A0A0A' : '1.5px solid transparent',
+                  backgroundColor: activeProject === item.id ? '#0A0A0A' : 'transparent',
+                  color: activeProject === item.id ? '#F7F6F3' : '#0A0A0A',
+                  fontSize: '14px',
+                  fontWeight: '500',
+                  cursor: 'pointer',
+                  transition: 'all 0.2s ease',
+                }}
+              >
+                {item.label}
+              </button>
+            ))}
+          </nav>
+        )}
+
+        {activeProject && (
+          <button 
+            onClick={() => setActiveProject(null)}
+            style={{
+              padding: '10px 24px',
+              borderRadius: '100px',
+              border: '1.5px solid #E5E4E1',
+              backgroundColor: 'transparent',
+              color: '#0A0A0A',
+              fontSize: '14px',
+              fontWeight: '500',
+              cursor: 'pointer',
+            }}
+          >
+            ← Back to Overview
+          </button>
+        )}
+      </header>
+
+      {/* Main Content */}
+      <main style={{
+        padding: '60px 48px',
+        maxWidth: '1400px',
+        margin: '0 auto',
+        opacity: isLoaded ? 1 : 0,
+        transform: isLoaded ? 'translateY(0)' : 'translateY(20px)',
+        transition: 'all 0.6s ease',
+      }}>
+
+        {/* ===== LANDING PAGE ===== */}
+        {!activeProject && (
+          <div>
+            {/* Hero Section */}
+            <div style={{ 
+              textAlign: 'center', 
+              marginBottom: '80px',
+              maxWidth: '900px',
+              margin: '0 auto 80px',
+            }}>
+              <p style={{ 
+                fontSize: '14px', 
+                color: '#666',
+                marginBottom: '16px',
+                textTransform: 'uppercase',
+                letterSpacing: '0.15em',
+                fontWeight: '500'
+              }}>Strategic Product Roadmap 2026</p>
+              <h1 style={{ 
+                fontSize: '64px', 
+                fontWeight: '400',
+                fontStyle: 'italic',
+                fontFamily: '"Playfair Display", Georgia, serif',
+                letterSpacing: '-0.02em',
+                marginBottom: '24px',
+                lineHeight: 1.1,
+              }}>
+                Three projects to make<br/>Mosaic unstoppable
+              </h1>
+              <p style={{ 
+                fontSize: '20px', 
+                color: '#444',
+                lineHeight: 1.6,
+                maxWidth: '700px',
+                margin: '0 auto',
+              }}>
+                A strategic vision for capturing the $21B enterprise video market, building an unassailable data moat, and establishing platform economics that compound over time.
+              </p>
+            </div>
+
+            {/* Why These Projects Matter */}
+            <div style={{
+              backgroundColor: '#0A0A0A',
+              borderRadius: '32px',
+              padding: '48px',
+              marginBottom: '48px',
+              color: '#F7F6F3',
+            }}>
+              <h2 style={{ 
+                fontSize: '13px',
+                textTransform: 'uppercase',
+                letterSpacing: '0.1em',
+                color: 'rgba(255,255,255,0.5)',
+                marginBottom: '24px',
+                fontWeight: '500'
+              }}>Why These Three Projects?</h2>
+              
+              <div style={{ 
+                display: 'grid', 
+                gridTemplateColumns: 'repeat(3, 1fr)',
+                gap: '32px',
+              }}>
+                <div>
+                  <div style={{
+                    width: '48px',
+                    height: '48px',
+                    borderRadius: '12px',
+                    backgroundColor: 'rgba(78, 205, 196, 0.2)',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    marginBottom: '16px',
+                  }}>
+                    <span style={{ fontSize: '24px' }}>🎯</span>
+                  </div>
+                  <h3 style={{ fontSize: '18px', fontWeight: '600', marginBottom: '8px' }}>Capture High-Margin Revenue</h3>
+                  <p style={{ fontSize: '14px', color: 'rgba(255,255,255,0.7)', lineHeight: 1.6 }}>
+                    Enterprise deals at $50-500K/year with 70%+ gross margins. Style Clone as premium conversion trigger at $25-100/month.
+                  </p>
+                </div>
+                <div>
+                  <div style={{
+                    width: '48px',
+                    height: '48px',
+                    borderRadius: '12px',
+                    backgroundColor: 'rgba(78, 205, 196, 0.2)',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    marginBottom: '16px',
+                  }}>
+                    <span style={{ fontSize: '24px' }}>🏰</span>
+                  </div>
+                  <h3 style={{ fontSize: '18px', fontWeight: '600', marginBottom: '8px' }}>Build Defensible Moats</h3>
+                  <p style={{ fontSize: '14px', color: 'rgba(255,255,255,0.7)', lineHeight: 1.6 }}>
+                    Style vectors create proprietary data. Marketplace creates network effects. Enterprise creates switching costs. All compounding.
+                  </p>
+                </div>
+                <div>
+                  <div style={{
+                    width: '48px',
+                    height: '48px',
+                    borderRadius: '12px',
+                    backgroundColor: 'rgba(78, 205, 196, 0.2)',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    marginBottom: '16px',
+                  }}>
+                    <span style={{ fontSize: '24px' }}>⚡</span>
+                  </div>
+                  <h3 style={{ fontSize: '18px', fontWeight: '600', marginBottom: '8px' }}>Leverage Core Strengths</h3>
+                  <p style={{ fontSize: '14px', color: 'rgba(255,255,255,0.7)', lineHeight: 1.6 }}>
+                    Kaggle-winning multimodal AI expertise. Tesla production engineering DNA. Node-based agentic architecture no competitor has.
+                  </p>
+                </div>
+              </div>
+            </div>
+
+            {/* Project Cards */}
+            <div style={{ 
+              display: 'grid', 
+              gridTemplateColumns: 'repeat(3, 1fr)',
+              gap: '24px',
+            }}>
+              {Object.entries(projectOverviews).map(([key, project]) => (
+                <div 
+                  key={key}
+                  onClick={() => {
+                    setActiveProject(key);
+                    if (key === 'style-clone') setStyleProgress(0);
+                  }}
+                  style={{
+                    backgroundColor: '#FFFFFF',
+                    borderRadius: '24px',
+                    padding: '32px',
+                    border: '1px solid rgba(0,0,0,0.06)',
+                    cursor: 'pointer',
+                    transition: 'all 0.3s ease',
+                    position: 'relative',
+                    overflow: 'hidden',
+                  }}
+                  onMouseEnter={(e) => {
+                    e.currentTarget.style.transform = 'translateY(-4px)';
+                    e.currentTarget.style.boxShadow = '0 20px 40px rgba(0,0,0,0.08)';
+                  }}
+                  onMouseLeave={(e) => {
+                    e.currentTarget.style.transform = 'translateY(0)';
+                    e.currentTarget.style.boxShadow = 'none';
+                  }}
+                >
+                  <div style={{
+                    position: 'absolute',
+                    top: '24px',
+                    right: '24px',
+                    fontSize: '64px',
+                    fontWeight: '700',
+                    color: 'rgba(0,0,0,0.03)',
+                    fontFamily: '"Playfair Display", Georgia, serif',
+                  }}>
+                    {project.number}
+                  </div>
+                  
+                  <span style={{
+                    padding: '6px 12px',
+                    backgroundColor: '#F7F6F3',
+                    borderRadius: '100px',
+                    fontSize: '12px',
+                    fontWeight: '500',
+                    color: '#666',
+                  }}>
+                    {project.timeline}
+                  </span>
+
+                  <h3 style={{ 
+                    fontSize: '28px', 
+                    fontWeight: '400',
+                    fontStyle: 'italic',
+                    fontFamily: '"Playfair Display", Georgia, serif',
+                    margin: '20px 0 8px',
+                  }}>
+                    {project.title}
+                  </h3>
+                  
+                  <p style={{ 
+                    fontSize: '16px', 
+                    color: '#666',
+                    marginBottom: '24px',
+                  }}>
+                    {project.tagline}
+                  </p>
+
+                  <div style={{
+                    padding: '16px',
+                    backgroundColor: '#F7F6F3',
+                    borderRadius: '12px',
+                    marginBottom: '20px',
+                  }}>
+                    <p style={{ fontSize: '13px', color: '#666', marginBottom: '4px' }}>Market Opportunity</p>
+                    <p style={{ fontSize: '24px', fontWeight: '600' }}>{project.marketSize}</p>
+                  </div>
+
+                  <div style={{ 
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'space-between',
+                  }}>
+                    <span style={{ fontSize: '14px', fontWeight: '500' }}>Explore Project</span>
+                    <div style={{
+                      width: '36px',
+                      height: '36px',
+                      borderRadius: '50%',
+                      backgroundColor: '#0A0A0A',
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                    }}>
+                      <span style={{ color: '#F7F6F3', fontSize: '18px' }}>→</span>
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </div>
+
+            {/* Timeline */}
+            <div style={{
+              marginTop: '64px',
+              padding: '40px 48px',
+              backgroundColor: '#FFFFFF',
+              borderRadius: '24px',
+              border: '1px solid rgba(0,0,0,0.06)',
+            }}>
+              <h3 style={{ 
+                fontSize: '13px',
+                textTransform: 'uppercase',
+                letterSpacing: '0.1em',
+                color: '#666',
+                marginBottom: '32px',
+                fontWeight: '500'
+              }}>Implementation Roadmap 2026</h3>
+              
+              <div style={{ 
+                display: 'flex',
+                position: 'relative',
+              }}>
+                {/* Timeline line */}
+                <div style={{
+                  position: 'absolute',
+                  top: '20px',
+                  left: '0',
+                  right: '0',
+                  height: '2px',
+                  backgroundColor: '#E5E4E1',
+                }}/>
+                
+                {[
+                  { q: 'Q1', title: 'Style Clone MVP', desc: 'Premium tier launch' },
+                  { q: 'Q2', title: 'Enterprise Beta', desc: '10-20 pilot customers' },
+                  { q: 'Q3', title: 'Marketplace Launch', desc: 'Agent ecosystem goes live' },
+                  { q: 'Q4', title: 'Enterprise GA', desc: 'Target: $2-5M ARR' },
+                ].map((item, i) => (
+                  <div key={i} style={{ flex: 1, textAlign: 'center', position: 'relative' }}>
+                    <div style={{
+                      width: '40px',
+                      height: '40px',
+                      borderRadius: '50%',
+                      backgroundColor: '#0A0A0A',
+                      color: '#F7F6F3',
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      margin: '0 auto 16px',
+                      fontSize: '13px',
+                      fontWeight: '600',
+                      position: 'relative',
+                      zIndex: 1,
+                    }}>
+                      {item.q}
+                    </div>
+                    <p style={{ fontSize: '15px', fontWeight: '600', marginBottom: '4px' }}>{item.title}</p>
+                    <p style={{ fontSize: '13px', color: '#666' }}>{item.desc}</p>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* ===== STYLE CLONE PROJECT ===== */}
+        {activeProject === 'style-clone' && (
+          <div>
+            <div style={{ marginBottom: '40px' }}>
+              <p style={{ 
+                fontSize: '14px', 
+                color: '#666',
+                marginBottom: '12px',
+                textTransform: 'uppercase',
+                letterSpacing: '0.1em',
+                fontWeight: '500'
+              }}>Project 01</p>
+              <h1 style={{ 
+                fontSize: '56px', 
+                fontWeight: '400',
+                fontStyle: 'italic',
+                fontFamily: '"Playfair Display", Georgia, serif',
+                letterSpacing: '-0.02em',
+                marginBottom: '20px',
+                lineHeight: 1.1,
+              }}>
+                Style Clone
+              </h1>
+              <p style={{ 
+                fontSize: '20px', 
+                color: '#444',
+                maxWidth: '600px',
+                lineHeight: 1.6,
+              }}>
+                The AI that edits like you. Learn your creative DNA from 3-5 videos, then apply your signature style to everything.
+              </p>
+            </div>
+
+            {/* Project Overview Card */}
+            <ProjectOverviewCard projectKey="style-clone" />
+
+            {/* Interactive Demo Section */}
+            <div style={{
+              padding: '24px 32px',
+              backgroundColor: '#FFFFFF',
+              borderRadius: '16px',
+              border: '1px solid rgba(0,0,0,0.06)',
+              marginBottom: '32px',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'space-between',
+            }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+                <span style={{ fontSize: '24px' }}>🎬</span>
+                <div>
+                  <p style={{ fontWeight: '600', fontSize: '15px' }}>Interactive Demo Below</p>
+                  <p style={{ fontSize: '13px', color: '#666' }}>See how Style Clone learns and applies creator preferences</p>
+                </div>
+              </div>
+              <div style={{
+                padding: '8px 16px',
+                backgroundColor: '#4ECDC4',
+                borderRadius: '100px',
+                fontSize: '13px',
+                fontWeight: '600',
+                color: '#0A0A0A',
+              }}>
+                Live Preview
+              </div>
+            </div>
+
+            <div style={{ 
+              display: 'grid', 
+              gridTemplateColumns: '1fr 1fr',
+              gap: '32px',
+            }}>
+              {/* Left: Video Analysis */}
+              <div style={{
+                backgroundColor: '#FFFFFF',
+                borderRadius: '24px',
+                padding: '32px',
+                border: '1px solid rgba(0,0,0,0.06)',
+              }}>
+                <h3 style={{ 
+                  fontSize: '13px',
+                  textTransform: 'uppercase',
+                  letterSpacing: '0.1em',
+                  color: '#666',
+                  marginBottom: '24px',
+                  fontWeight: '500'
+                }}>Step 1: Upload Your Videos</h3>
+                
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
+                  {creatorVideos.map((video, i) => (
+                    <div 
+                      key={video.id}
+                      style={{
+                        display: 'flex',
+                        alignItems: 'center',
+                        gap: '16px',
+                        padding: '16px',
+                        backgroundColor: '#F7F6F3',
+                        borderRadius: '16px',
+                        opacity: styleProgress > (i * 25) ? 1 : 0.4,
+                        transition: 'all 0.3s ease',
+                      }}
+                    >
+                      <div style={{
+                        width: '80px',
+                        height: '45px',
+                        backgroundColor: '#E5E4E1',
+                        borderRadius: '8px',
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        overflow: 'hidden',
+                      }}>
+                        <div style={{
+                          width: '100%',
+                          height: '100%',
+                          background: `linear-gradient(135deg, ${['#667eea', '#f093fb', '#4fd1c7', '#f6ad55'][i]} 0%, ${['#764ba2', '#f5576c', '#38b2ac', '#ed8936'][i]} 100%)`,
+                          opacity: 0.8,
+                        }}/>
+                      </div>
+                      <div style={{ flex: 1 }}>
+                        <p style={{ fontWeight: '500', fontSize: '15px', marginBottom: '4px' }}>{video.title}</p>
+                        <p style={{ fontSize: '13px', color: '#666' }}>{video.views} views · {video.style}</p>
+                      </div>
+                      {styleProgress > (i * 25) && (
+                        <div style={{
+                          width: '24px',
+                          height: '24px',
+                          borderRadius: '50%',
+                          backgroundColor: '#22C55E',
+                          display: 'flex',
+                          alignItems: 'center',
+                          justifyContent: 'center',
+                        }}>
+                          <svg width="14" height="14" viewBox="0 0 24 24" fill="none">
+                            <path d="M20 6L9 17L4 12" stroke="white" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"/>
+                          </svg>
+                        </div>
+                      )}
+                    </div>
+                  ))}
+                </div>
+
+                <div style={{ marginTop: '24px' }}>
+                  <div style={{ 
+                    display: 'flex', 
+                    justifyContent: 'space-between',
+                    marginBottom: '8px',
+                  }}>
+                    <span style={{ fontSize: '13px', color: '#666' }}>Analyzing your editing patterns...</span>
+                    <span style={{ fontSize: '13px', fontWeight: '600' }}>{styleProgress}%</span>
+                  </div>
+                  <div style={{
+                    height: '6px',
+                    backgroundColor: '#E5E4E1',
+                    borderRadius: '100px',
+                    overflow: 'hidden',
+                  }}>
+                    <div style={{
+                      height: '100%',
+                      width: `${styleProgress}%`,
+                      backgroundColor: '#0A0A0A',
+                      borderRadius: '100px',
+                      transition: 'width 0.3s ease',
+                    }}/>
+                  </div>
+                </div>
+              </div>
+
+              {/* Right: Style Vector */}
+              <div style={{
+                backgroundColor: '#0A0A0A',
+                borderRadius: '24px',
+                padding: '32px',
+                color: '#F7F6F3',
+              }}>
+                <h3 style={{ 
+                  fontSize: '13px',
+                  textTransform: 'uppercase',
+                  letterSpacing: '0.1em',
+                  color: 'rgba(255,255,255,0.5)',
+                  marginBottom: '24px',
+                  fontWeight: '500'
+                }}>Step 2: Your Style DNA Extracted</h3>
+
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
+                  {styleMetrics.map((metric, i) => (
+                    <div 
+                      key={metric.label}
+                      style={{
+                        opacity: styleProgress > 50 ? 1 : 0.3,
+                        transform: styleProgress > 50 ? 'translateX(0)' : 'translateX(-10px)',
+                        transition: `all 0.4s ease ${i * 0.1}s`,
+                      }}
+                    >
+                      <div style={{ 
+                        display: 'flex', 
+                        justifyContent: 'space-between',
+                        marginBottom: '8px',
+                      }}>
+                        <span style={{ fontSize: '14px', color: 'rgba(255,255,255,0.7)' }}>{metric.label}</span>
+                        <span style={{ fontSize: '14px', fontWeight: '600' }}>{metric.value}</span>
+                      </div>
+                      <div style={{
+                        height: '4px',
+                        backgroundColor: 'rgba(255,255,255,0.1)',
+                        borderRadius: '100px',
+                        overflow: 'hidden',
+                      }}>
+                        <div style={{
+                          height: '100%',
+                          width: styleProgress > 50 ? `${metric.confidence}%` : '0%',
+                          background: 'linear-gradient(90deg, #4ECDC4 0%, #44CF6C 100%)',
+                          borderRadius: '100px',
+                          transition: 'width 0.6s ease',
+                        }}/>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+
+                {styleProgress === 100 && (
+                  <button style={{
+                    width: '100%',
+                    marginTop: '32px',
+                    padding: '16px',
+                    borderRadius: '100px',
+                    border: 'none',
+                    background: 'linear-gradient(90deg, #4ECDC4 0%, #44CF6C 100%)',
+                    color: '#0A0A0A',
+                    fontSize: '15px',
+                    fontWeight: '600',
+                    cursor: 'pointer',
+                  }}>
+                    Apply Style to New Video →
+                  </button>
+                )}
+              </div>
+            </div>
+
+            {/* Platform Export Preview */}
+            {styleProgress === 100 && (
+              <div style={{
+                marginTop: '32px',
+                backgroundColor: '#FFFFFF',
+                borderRadius: '24px',
+                padding: '32px',
+                border: '1px solid rgba(0,0,0,0.06)',
+              }}>
+                <h3 style={{ 
+                  fontSize: '13px',
+                  textTransform: 'uppercase',
+                  letterSpacing: '0.1em',
+                  color: '#666',
+                  marginBottom: '24px',
+                  fontWeight: '500'
+                }}>Step 3: One-Click Platform Variants</h3>
+                
+                <div style={{ display: 'flex', gap: '16px' }}>
+                  {[
+                    { platform: 'TikTok', ratio: '9:16', icon: '📱' },
+                    { platform: 'YouTube', ratio: '16:9', icon: '▶️' },
+                    { platform: 'Instagram', ratio: '1:1', icon: '📷' },
+                    { platform: 'LinkedIn', ratio: '16:9', icon: '💼' },
+                  ].map(item => (
+                    <div 
+                      key={item.platform}
+                      style={{
+                        flex: 1,
+                        padding: '24px',
+                        backgroundColor: '#F7F6F3',
+                        borderRadius: '16px',
+                        textAlign: 'center',
+                        cursor: 'pointer',
+                        transition: 'all 0.2s ease',
+                      }}
+                    >
+                      <div style={{ fontSize: '32px', marginBottom: '12px' }}>{item.icon}</div>
+                      <p style={{ fontWeight: '600', fontSize: '15px', marginBottom: '4px' }}>{item.platform}</p>
+                      <p style={{ fontSize: '13px', color: '#666' }}>{item.ratio}</p>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
+          </div>
+        )}
+
+        {/* ===== ENTERPRISE PROJECT ===== */}
+        {activeProject === 'enterprise' && (
+          <div>
+            <div style={{ marginBottom: '40px' }}>
+              <p style={{ 
+                fontSize: '14px', 
+                color: '#666',
+                marginBottom: '12px',
+                textTransform: 'uppercase',
+                letterSpacing: '0.1em',
+                fontWeight: '500'
+              }}>Project 02</p>
+              <h1 style={{ 
+                fontSize: '56px', 
+                fontWeight: '400',
+                fontStyle: 'italic',
+                fontFamily: '"Playfair Display", Georgia, serif',
+                letterSpacing: '-0.02em',
+                marginBottom: '20px',
+                lineHeight: 1.1,
+              }}>
+                Mosaic for Teams
+              </h1>
+              <p style={{ 
+                fontSize: '20px', 
+                color: '#444',
+                maxWidth: '600px',
+                lineHeight: 1.6,
+              }}>
+                Enterprise content factory. One brief, infinite variants. Brand-consistent video at scale.
+              </p>
+            </div>
+
+            {/* Project Overview Card */}
+            <ProjectOverviewCard projectKey="enterprise" />
+
+            {/* Interactive Demo Section */}
+            <div style={{
+              padding: '24px 32px',
+              backgroundColor: '#FFFFFF',
+              borderRadius: '16px',
+              border: '1px solid rgba(0,0,0,0.06)',
+              marginBottom: '32px',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'space-between',
+            }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+                <span style={{ fontSize: '24px' }}>🏢</span>
+                <div>
+                  <p style={{ fontWeight: '600', fontSize: '15px' }}>Enterprise Dashboard Preview</p>
+                  <p style={{ fontSize: '13px', color: '#666' }}>Campaign management, brand engine, and multi-variant pipelines</p>
+                </div>
+              </div>
+              <div style={{
+                padding: '8px 16px',
+                backgroundColor: '#4ECDC4',
+                borderRadius: '100px',
+                fontSize: '13px',
+                fontWeight: '600',
+                color: '#0A0A0A',
+              }}>
+                Live Preview
+              </div>
+            </div>
+
+            <div style={{ 
+              display: 'grid', 
+              gridTemplateColumns: '280px 1fr',
+              gap: '32px',
+            }}>
+              {/* Left Sidebar: Brand Assets */}
+              <div>
+                <div style={{
+                  backgroundColor: '#FFFFFF',
+                  borderRadius: '24px',
+                  padding: '24px',
+                  border: '1px solid rgba(0,0,0,0.06)',
+                  marginBottom: '24px',
+                }}>
+                  <h3 style={{ 
+                    fontSize: '13px',
+                    textTransform: 'uppercase',
+                    letterSpacing: '0.1em',
+                    color: '#666',
+                    marginBottom: '20px',
+                    fontWeight: '500'
+                  }}>Brand Engine</h3>
+                  <p style={{ fontSize: '12px', color: '#999', marginBottom: '16px', lineHeight: 1.5 }}>
+                    Automatically extracted from your existing assets. Every output conforms to these standards.
+                  </p>
+                  
+                  <div style={{ marginBottom: '20px' }}>
+                    <p style={{ fontSize: '12px', color: '#999', marginBottom: '8px' }}>Colors</p>
+                    <div style={{ display: 'flex', gap: '8px' }}>
+                      {brandAssets.colors.map(color => (
+                        <div 
+                          key={color}
+                          style={{
+                            width: '36px',
+                            height: '36px',
+                            backgroundColor: color,
+                            borderRadius: '8px',
+                            border: color === '#F5F5F0' ? '1px solid #E5E4E1' : 'none',
+                          }}
+                        />
+                      ))}
+                    </div>
+                  </div>
+
+                  <div style={{ marginBottom: '20px' }}>
+                    <p style={{ fontSize: '12px', color: '#999', marginBottom: '8px' }}>Typography</p>
+                    {brandAssets.fonts.map(font => (
+                      <div 
+                        key={font}
+                        style={{
+                          padding: '8px 12px',
+                          backgroundColor: '#F7F6F3',
+                          borderRadius: '8px',
+                          fontSize: '13px',
+                          marginBottom: '6px',
+                        }}
+                      >
+                        {font}
+                      </div>
+                    ))}
+                  </div>
+
+                  <div>
+                    <p style={{ fontSize: '12px', color: '#999', marginBottom: '8px' }}>Transitions</p>
+                    {brandAssets.transitions.map(t => (
+                      <div 
+                        key={t}
+                        style={{
+                          padding: '8px 12px',
+                          backgroundColor: '#F7F6F3',
+                          borderRadius: '8px',
+                          fontSize: '13px',
+                          marginBottom: '6px',
+                        }}
+                      >
+                        {t}
+                      </div>
+                    ))}
+                  </div>
+                </div>
+
+                <div style={{
+                  backgroundColor: '#0A0A0A',
+                  borderRadius: '24px',
+                  padding: '24px',
+                  color: '#F7F6F3',
+                }}>
+                  <h3 style={{ 
+                    fontSize: '13px',
+                    textTransform: 'uppercase',
+                    letterSpacing: '0.1em',
+                    color: 'rgba(255,255,255,0.5)',
+                    marginBottom: '16px',
+                    fontWeight: '500'
+                  }}>This Month</h3>
+                  <div style={{ fontSize: '48px', fontWeight: '600', marginBottom: '8px' }}>847</div>
+                  <p style={{ fontSize: '14px', color: 'rgba(255,255,255,0.6)' }}>videos generated</p>
+                  <div style={{ 
+                    marginTop: '16px',
+                    padding: '12px',
+                    backgroundColor: 'rgba(78, 205, 196, 0.2)',
+                    borderRadius: '12px',
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: '8px',
+                  }}>
+                    <span style={{ color: '#4ECDC4' }}>↑ 34%</span>
+                    <span style={{ fontSize: '13px', color: 'rgba(255,255,255,0.6)' }}>vs last month</span>
+                  </div>
+                </div>
+              </div>
+
+              {/* Right: Campaign Pipeline */}
+              <div style={{
+                backgroundColor: '#FFFFFF',
+                borderRadius: '24px',
+                padding: '32px',
+                border: '1px solid rgba(0,0,0,0.06)',
+              }}>
+                <div style={{ 
+                  display: 'flex', 
+                  justifyContent: 'space-between',
+                  alignItems: 'center',
+                  marginBottom: '24px',
+                }}>
+                  <h3 style={{ 
+                    fontSize: '13px',
+                    textTransform: 'uppercase',
+                    letterSpacing: '0.1em',
+                    color: '#666',
+                    fontWeight: '500'
+                  }}>Campaign Pipelines</h3>
+                  <button style={{
+                    padding: '10px 20px',
+                    borderRadius: '100px',
+                    border: '1.5px solid #0A0A0A',
+                    backgroundColor: 'transparent',
+                    fontSize: '13px',
+                    fontWeight: '500',
+                    cursor: 'pointer',
+                  }}>
+                    + New Campaign
+                  </button>
+                </div>
+
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
+                  {campaigns.map(campaign => (
+                    <div 
+                      key={campaign.id}
+                      onClick={() => setActiveCampaign(activeCampaign === campaign.id ? null : campaign.id)}
+                      style={{
+                        padding: '24px',
+                        backgroundColor: activeCampaign === campaign.id ? '#F7F6F3' : '#FAFAF8',
+                        borderRadius: '16px',
+                        cursor: 'pointer',
+                        transition: 'all 0.2s ease',
+                        border: activeCampaign === campaign.id ? '1px solid #0A0A0A' : '1px solid transparent',
+                      }}
+                    >
+                      <div style={{ 
+                        display: 'flex', 
+                        justifyContent: 'space-between',
+                        alignItems: 'flex-start',
+                        marginBottom: '16px',
+                      }}>
+                        <div>
+                          <h4 style={{ fontSize: '17px', fontWeight: '600', marginBottom: '6px' }}>
+                            {campaign.name}
+                          </h4>
+                          <p style={{ fontSize: '13px', color: '#666' }}>
+                            {campaign.variants} variants · {campaign.languages.length} languages
+                          </p>
+                        </div>
+                        <span style={{
+                          padding: '6px 12px',
+                          borderRadius: '100px',
+                          fontSize: '12px',
+                          fontWeight: '500',
+                          backgroundColor: campaign.status === 'Complete' ? '#DCFCE7' : 
+                                          campaign.status === 'In Progress' ? '#FEF3C7' : '#F3F4F6',
+                          color: campaign.status === 'Complete' ? '#166534' : 
+                                 campaign.status === 'In Progress' ? '#92400E' : '#374151',
+                        }}>
+                          {campaign.status}
+                        </span>
+                      </div>
+
+                      <div style={{ display: 'flex', gap: '8px', marginBottom: '16px' }}>
+                        {campaign.outputs.map(ratio => (
+                          <span 
+                            key={ratio}
+                            style={{
+                              padding: '4px 10px',
+                              borderRadius: '6px',
+                              fontSize: '12px',
+                              backgroundColor: '#FFFFFF',
+                              border: '1px solid #E5E4E1',
+                            }}
+                          >
+                            {ratio}
+                          </span>
+                        ))}
+                        <span style={{ color: '#999', fontSize: '12px', marginLeft: '8px' }}>
+                          {campaign.languages.join(' · ')}
+                        </span>
+                      </div>
+
+                      <div style={{
+                        height: '4px',
+                        backgroundColor: '#E5E4E1',
+                        borderRadius: '100px',
+                        overflow: 'hidden',
+                      }}>
+                        <div style={{
+                          height: '100%',
+                          width: `${campaign.progress}%`,
+                          backgroundColor: campaign.status === 'Complete' ? '#22C55E' : '#0A0A0A',
+                          borderRadius: '100px',
+                        }}/>
+                      </div>
+
+                      {activeCampaign === campaign.id && (
+                        <div style={{ 
+                          marginTop: '20px',
+                          paddingTop: '20px',
+                          borderTop: '1px solid #E5E4E1',
+                          display: 'grid',
+                          gridTemplateColumns: 'repeat(3, 1fr)',
+                          gap: '12px',
+                        }}>
+                          {['Agent Log', 'Approvals', 'Export All'].map(action => (
+                            <button
+                              key={action}
+                              style={{
+                                padding: '12px',
+                                borderRadius: '12px',
+                                border: '1px solid #E5E4E1',
+                                backgroundColor: '#FFFFFF',
+                                fontSize: '13px',
+                                fontWeight: '500',
+                                cursor: 'pointer',
+                              }}
+                            >
+                              {action}
+                            </button>
+                          ))}
+                        </div>
+                      )}
+                    </div>
+                  ))}
+                </div>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* ===== MARKETPLACE PROJECT ===== */}
+        {activeProject === 'marketplace' && (
+          <div>
+            <div style={{ marginBottom: '40px' }}>
+              <p style={{ 
+                fontSize: '14px', 
+                color: '#666',
+                marginBottom: '12px',
+                textTransform: 'uppercase',
+                letterSpacing: '0.1em',
+                fontWeight: '500'
+              }}>Project 03</p>
+              <h1 style={{ 
+                fontSize: '56px', 
+                fontWeight: '400',
+                fontStyle: 'italic',
+                fontFamily: '"Playfair Display", Georgia, serif',
+                letterSpacing: '-0.02em',
+                marginBottom: '20px',
+                lineHeight: 1.1,
+              }}>
+                Agent Marketplace
+              </h1>
+              <p style={{ 
+                fontSize: '20px', 
+                color: '#444',
+                maxWidth: '600px',
+                lineHeight: 1.6,
+              }}>
+                Discover, share, and monetize AI video agents. The ecosystem that grows with you.
+              </p>
+            </div>
+
+            {/* Project Overview Card */}
+            <ProjectOverviewCard projectKey="marketplace" />
+
+            {/* Interactive Demo Section */}
+            <div style={{
+              padding: '24px 32px',
+              backgroundColor: '#FFFFFF',
+              borderRadius: '16px',
+              border: '1px solid rgba(0,0,0,0.06)',
+              marginBottom: '32px',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'space-between',
+            }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+                <span style={{ fontSize: '24px' }}>🛒</span>
+                <div>
+                  <p style={{ fontWeight: '600', fontSize: '15px' }}>Marketplace Interface Preview</p>
+                  <p style={{ fontSize: '13px', color: '#666' }}>Browse agents, see pricing models, and creator economics</p>
+                </div>
+              </div>
+              <div style={{
+                padding: '8px 16px',
+                backgroundColor: '#4ECDC4',
+                borderRadius: '100px',
+                fontSize: '13px',
+                fontWeight: '600',
+                color: '#0A0A0A',
+              }}>
+                Live Preview
+              </div>
+            </div>
+
+            {/* Category Pills */}
+            <div style={{ 
+              display: 'flex', 
+              gap: '8px',
+              marginBottom: '32px',
+              flexWrap: 'wrap',
+            }}>
+              {categories.map(cat => (
+                <button
+                  key={cat}
+                  onClick={() => setActiveCategory(cat)}
+                  style={{
+                    padding: '10px 20px',
+                    borderRadius: '100px',
+                    border: activeCategory === cat ? '1.5px solid #0A0A0A' : '1.5px solid #E5E4E1',
+                    backgroundColor: activeCategory === cat ? '#0A0A0A' : 'transparent',
+                    color: activeCategory === cat ? '#F7F6F3' : '#0A0A0A',
+                    fontSize: '14px',
+                    fontWeight: '500',
+                    cursor: 'pointer',
+                    transition: 'all 0.2s ease',
+                  }}
+                >
+                  {cat}
+                </button>
+              ))}
+            </div>
+
+            {/* Agent Grid */}
+            <div style={{ 
+              display: 'grid', 
+              gridTemplateColumns: 'repeat(3, 1fr)',
+              gap: '24px',
+            }}>
+              {agents
+                .filter(a => activeCategory === 'All' || a.category === activeCategory)
+                .map(agent => (
+                <div 
+                  key={agent.id}
+                  onClick={() => setSelectedAgent(selectedAgent === agent.id ? null : agent.id)}
+                  style={{
+                    backgroundColor: '#FFFFFF',
+                    borderRadius: '24px',
+                    padding: '28px',
+                    border: selectedAgent === agent.id ? '2px solid #0A0A0A' : '1px solid rgba(0,0,0,0.06)',
+                    cursor: 'pointer',
+                    transition: 'all 0.2s ease',
+                    transform: selectedAgent === agent.id ? 'scale(1.02)' : 'scale(1)',
+                  }}
+                >
+                  <div style={{ 
+                    display: 'flex', 
+                    justifyContent: 'space-between',
+                    alignItems: 'flex-start',
+                    marginBottom: '16px',
+                  }}>
+                    <span style={{
+                      padding: '6px 12px',
+                      borderRadius: '100px',
+                      fontSize: '12px',
+                      fontWeight: '500',
+                      backgroundColor: '#F7F6F3',
+                    }}>
+                      {agent.category}
+                    </span>
+                    <div style={{ 
+                      display: 'flex', 
+                      alignItems: 'center',
+                      gap: '4px',
+                    }}>
+                      <span style={{ color: '#FBBF24' }}>★</span>
+                      <span style={{ fontSize: '14px', fontWeight: '600' }}>{agent.rating}</span>
+                    </div>
+                  </div>
+
+                  <h3 style={{ 
+                    fontSize: '20px', 
+                    fontWeight: '600',
+                    marginBottom: '8px',
+                    letterSpacing: '-0.01em',
+                  }}>
+                    {agent.name}
+                  </h3>
+                  
+                  <p style={{ 
+                    fontSize: '14px', 
+                    color: '#666',
+                    marginBottom: '16px',
+                    lineHeight: 1.5,
+                  }}>
+                    {agent.description}
+                  </p>
+
+                  <div style={{ 
+                    display: 'flex', 
+                    justifyContent: 'space-between',
+                    alignItems: 'center',
+                    paddingTop: '16px',
+                    borderTop: '1px solid #F0F0ED',
+                  }}>
+                    <div>
+                      <p style={{ fontSize: '12px', color: '#999' }}>by {agent.creator}</p>
+                      <p style={{ fontSize: '12px', color: '#999' }}>{agent.users} users</p>
+                    </div>
+                    <span style={{
+                      padding: '8px 16px',
+                      borderRadius: '100px',
+                      fontSize: '14px',
+                      fontWeight: '600',
+                      backgroundColor: agent.price === 'Free' ? '#DCFCE7' : '#0A0A0A',
+                      color: agent.price === 'Free' ? '#166534' : '#F7F6F3',
+                    }}>
+                      {agent.price}
+                    </span>
+                  </div>
+
+                  {selectedAgent === agent.id && (
+                    <div style={{ 
+                      marginTop: '20px',
+                      paddingTop: '20px',
+                      borderTop: '1px solid #F0F0ED',
+                      display: 'flex',
+                      gap: '12px',
+                    }}>
+                      <button style={{
+                        flex: 1,
+                        padding: '14px',
+                        borderRadius: '100px',
+                        border: 'none',
+                        backgroundColor: '#0A0A0A',
+                        color: '#F7F6F3',
+                        fontSize: '14px',
+                        fontWeight: '600',
+                        cursor: 'pointer',
+                      }}>
+                        Add to Canvas
+                      </button>
+                      <button style={{
+                        padding: '14px 20px',
+                        borderRadius: '100px',
+                        border: '1.5px solid #E5E4E1',
+                        backgroundColor: 'transparent',
+                        fontSize: '14px',
+                        fontWeight: '500',
+                        cursor: 'pointer',
+                      }}>
+                        Preview
+                      </button>
+                    </div>
+                  )}
+                </div>
+              ))}
+            </div>
+
+            {/* Creator CTA */}
+            <div style={{
+              marginTop: '48px',
+              background: 'linear-gradient(135deg, #0A0A0A 0%, #1a1a1a 100%)',
+              borderRadius: '24px',
+              padding: '48px',
+              color: '#F7F6F3',
+              display: 'flex',
+              justifyContent: 'space-between',
+              alignItems: 'center',
+            }}>
+              <div>
+                <h3 style={{ 
+                  fontSize: '28px', 
+                  fontWeight: '400',
+                  fontStyle: 'italic',
+                  fontFamily: '"Playfair Display", Georgia, serif',
+                  marginBottom: '12px',
+                }}>
+                  Build agents, earn revenue
+                </h3>
+                <p style={{ fontSize: '16px', color: 'rgba(255,255,255,0.7)', maxWidth: '400px' }}>
+                  Turn your editing expertise into income. Top creators earn $5,000+/month from their agents. Mosaic takes 20-30% commission.
+                </p>
+              </div>
+              <button style={{
+                padding: '16px 32px',
+                borderRadius: '100px',
+                border: 'none',
+                background: 'linear-gradient(90deg, #4ECDC4 0%, #44CF6C 100%)',
+                color: '#0A0A0A',
+                fontSize: '15px',
+                fontWeight: '600',
+                cursor: 'pointer',
+              }}>
+                Become a Creator →
+              </button>
+            </div>
+          </div>
+        )}
+      </main>
+
+      {/* Footer */}
+      <footer style={{
+        padding: '32px 48px',
+        borderTop: '1px solid rgba(0,0,0,0.06)',
+        display: 'flex',
+        justifyContent: 'space-between',
+        alignItems: 'center',
+        color: '#666',
+        fontSize: '13px',
+      }}>
+        <p>© 2025 Mosaic · Strategic Demo</p>
+        <p style={{ fontWeight: '500' }}>Built by Sameer | I studied your product. I saw the gaps. I built the solutions.</p>
+      </footer>
+
+      <style>{`
+        @import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Playfair+Display:ital,wght@0,400;0,600;1,400;1,600&display=swap');
+        
+        * {
+          margin: 0;
+          padding: 0;
+          box-sizing: border-box;
+        }
+        
+        button:hover {
+          opacity: 0.9;
+        }
+      `}</style>
+    </div>
+  );
+};
+
+export default MosaicPrototype;
